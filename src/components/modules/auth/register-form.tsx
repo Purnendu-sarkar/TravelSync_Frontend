@@ -2,95 +2,113 @@
 
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { createTraveler } from "@/services/auth/auth.service";
+import { registerTraveler } from "@/services/auth/registerTraveler";
+import InputFieldError from "@/components/shared/InputFieldError";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Field,
+  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldDescription,
 } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 const RegisterForm = () => {
-  const [state, formAction, isPending] = useActionState(createTraveler, null);
+  const [state, formAction, isPending] = useActionState(registerTraveler, null);
 
   useEffect(() => {
-    if (state?.success === false && state?.message) {
+    if (state && !state.success && state.message) {
       toast.error(state.message);
     }
-
-    if (state?.success === true) {
-      toast.success("Traveler account created successfully!");
-    }
   }, [state]);
-
   return (
-    <form action={formAction} encType="multipart/form-data">
-      <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Name */}
-        <Field>
-          <FieldLabel>Name</FieldLabel>
-          <Input name="name" placeholder="John Doe" required />
-        </Field>
+    <form action={formAction}>
+      <FieldGroup>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Name */}
+          <Field>
+            <FieldLabel htmlFor="name">Full Name</FieldLabel>
+            <Input id="name" name="name" type="text" placeholder="John Doe" />
+            <InputFieldError field="name" state={state} />
+          </Field>
+          {/* Email */}
+          <Field>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="m@example.com"
+            />
+            <InputFieldError field="email" state={state} />
+          </Field>
+          {/* Password */}
+          <Field>
+            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Input id="password" name="password" type="password" />
 
-        {/* Email */}
-        <Field>
-          <FieldLabel>Email</FieldLabel>
-          <Input name="email" type="email" required />
-        </Field>
+            <InputFieldError field="password" state={state} />
+          </Field>
+          {/* Confirm Password */}
+          <Field>
+            <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+            />
 
-        {/* Password */}
-        <Field>
-          <FieldLabel>Password</FieldLabel>
-          <Input name="password" type="password" required />
-        </Field>
+            <InputFieldError field="confirmPassword" state={state} />
+          </Field>
+          {/* Address */}
+          <Field>
+            <FieldLabel htmlFor="address">Address</FieldLabel>
+            <Input
+              id="address"
+              name="address"
+              type="text"
+              placeholder="123 Main St"
+            />
+            <InputFieldError field="address" state={state} />
+          </Field>
+          {/* Gender */}
+          <Field>
+            <FieldLabel htmlFor="gender">Gender</FieldLabel>
+            <select
+              id="gender"
+              name="gender"
+              className="border p-2 rounded"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Select Gender
+              </option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+            </select>
+            <InputFieldError field="gender" state={state} />
+          </Field>
 
-        {/* Confirm Password */}
-        <Field>
-          <FieldLabel>Confirm Password</FieldLabel>
-          <Input name="confirmPassword" type="password" required />
-        </Field>
+          {/* Profile Photo */}
+          <Field className="md:col-span-2">
+            <FieldLabel htmlFor="file">Profile Photo</FieldLabel>
+            <Input id="file" name="file" type="file" />
+          </Field>
+        </div>
+        <FieldGroup className="mt-4">
+          <Field>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Creating Account..." : "Create Account"}
+            </Button>
 
-        {/* Gender */}
-        <Field>
-          <FieldLabel>Gender</FieldLabel>
-          <select
-            name="gender"
-            required
-            className="w-full border px-3 py-2 rounded-md"
-          >
-            <option value="">Select</option>
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-          </select>
-        </Field>
-
-        {/* Location */}
-        <Field>
-          <FieldLabel>Location</FieldLabel>
-          <Input name="location" required />
-        </Field>
-
-        {/* Profile Photo */}
-        <Field className="md:col-span-2">
-          <FieldLabel>Profile Photo</FieldLabel>
-          <Input name="file" type="file" required />
-        </Field>
-
-        {/* Submit */}
-        <Field className="md:col-span-2">
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Creating..." : "Create Traveler Account"}
-          </Button>
-
-          <FieldDescription className="text-center mt-2">
-            Already have an account?{" "}
-            <a href="/login" className="text-blue-600 underline">
-              Login
-            </a>
-          </FieldDescription>
-        </Field>
+            <FieldDescription className="px-6 text-center">
+              Already have an account?{" "}
+              <a href="/login" className="text-blue-600 hover:underline">
+                Sign in
+              </a>
+            </FieldDescription>
+          </Field>
+        </FieldGroup>
       </FieldGroup>
     </form>
   );
