@@ -97,7 +97,7 @@ export default function PublicNavbar({
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-2xl font-bold text-primary">
-            Travel<span className="text-foreground">Buddy</span>
+            Travel<span className="text-foreground">Sync</span>
           </Link>
 
           {/* Desktop nav */}
