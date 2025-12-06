@@ -21,7 +21,9 @@ export async function getAllTravelers(queryString?: string) {
     }
 }
 
-
+/** UPDATE TRAVELER STATUS
+ * API: PATCH /user/:email/status
+ */
 export async function updateTravelerStatusAction(email: string, status: string) {
     try {
         const response = await serverFetch.patch(`/user/${email}/status`, {
@@ -43,6 +45,29 @@ export async function updateTravelerStatusAction(email: string, status: string) 
         return {
             success: false,
             message: `${process.env.NODE_ENV === 'development' ? error.message : 'Failed to update traveler status.'}`
+        };
+    }
+}
+
+/** DELETE TRAVELER
+ * API: DELETE /user/:email
+ */
+
+export async function deleteTravelerAction(email: string) {
+    try {
+        const response = await serverFetch.delete(`/user/${email}`);
+
+        const result = await response.json();
+
+        if (result.success) {
+            revalidatePath("/admin/dashboard/travelers-management");
+        }
+
+        return result;
+    } catch (error: any) {
+        return {
+            success: false,
+            message: process.env.NODE_ENV === "development" ? error.message : "Failed to delete traveler",
         };
     }
 }
