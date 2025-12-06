@@ -3,6 +3,7 @@ export interface ITraveler {
   id: string;
   name?: string | null;
   email: string;
+  role?: string | null;
   bio?: string | null;
   status: "ACTIVE" | "BLOCKED" | "INACTIVE";
   gender?: "MALE" | "FEMALE" | null;
