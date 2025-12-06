@@ -1,5 +1,4 @@
 "use client";
-
 import { useDebounce } from "@/hooks/useDebounce";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -40,8 +39,10 @@ const SearchFilter = ({
 
     startTransition(() => {
       router.push(`?${params.toString()}`);
+      // router.refresh();
     });
-  }, [debouncedValue, paramName, router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue, paramName, router]);
 
   return (
     <div className="relative">

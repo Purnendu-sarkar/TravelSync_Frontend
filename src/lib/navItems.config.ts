@@ -89,7 +89,7 @@ export const adminNavItems: NavSection[] = [
         items: [
             {
                 title: "All Users",
-                href: "/admin/dashboard/users-management",
+                href: "/admin/dashboard/travelers-management",
                 icon: "Users",
                 roles: ["ADMIN"],
             },
