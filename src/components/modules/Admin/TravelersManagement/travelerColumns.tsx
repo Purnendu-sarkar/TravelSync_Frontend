@@ -11,7 +11,7 @@ export const travelersColumns: Column<ITraveler>[] = [
     header: "Traveler",
     accessor: (traveler) => (
       <UserInfoCell
-        name={traveler.name}
+        name={traveler.name ?? "N/A"}
         email={traveler.email}
         photo={traveler.profilePhoto}
       />
@@ -34,7 +34,9 @@ export const travelersColumns: Column<ITraveler>[] = [
   },
   {
     header: "Status",
-    accessor: (traveler) => <StatusBadgeCell isDeleted={traveler.isDeleted} />,
+    accessor: (traveler) => (
+      <StatusBadgeCell email={traveler.email} status={traveler.status} />
+    ),
   },
   {
     header: "Joined",

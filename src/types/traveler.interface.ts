@@ -4,6 +4,7 @@ export interface ITraveler {
   name?: string | null;
   email: string;
   bio?: string | null;
+  status: "ACTIVE" | "BLOCKED" | "INACTIVE";
   gender?: "MALE" | "FEMALE" | null;
   interests: string[];
   address?: string | null;

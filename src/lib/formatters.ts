@@ -7,7 +7,7 @@ export function getInitials(name: string): string {
         .slice(0, 2);
 }
 
-export function formatDateTime(date: string | Date, format: string): string {
+export function formatDateTime(date: string | Date): string {
     return new Date(date).toLocaleString("en-US", {
         year: "numeric",
         month: "short",
