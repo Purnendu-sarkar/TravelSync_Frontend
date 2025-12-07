@@ -35,7 +35,7 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
     ]
 }
 
-export const userNavItems: NavSection[] = [
+export const travelerNavItems: NavSection[] = [
     {
         title: "Travel Plans",
         items: [
@@ -47,7 +47,7 @@ export const userNavItems: NavSection[] = [
             },
             {
                 title: "Add Travel Plan",
-                href: "/travel-plans/add",
+                href: "/dashboard/create-travel-plan",
                 icon: "Plus",
                 roles: ["TRAVELER"],
             },
@@ -143,7 +143,7 @@ export const getNavItemsByRole = (role: UserRole): NavSection[] => {
         case "ADMIN":
             return [...commonNavItems, ...adminNavItems];
         case "TRAVELER":
-            return [...commonNavItems, ...userNavItems];
+            return [...commonNavItems, ...travelerNavItems];
         default:
             return [];
     }
