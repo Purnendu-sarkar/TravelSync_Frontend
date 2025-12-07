@@ -59,7 +59,7 @@ export const createTravelPlan = async (_currentState: any, formData: FormData): 
     const result = await res.json();
 
     if (result.success) {
-      revalidatePath("/dashboard");  // TODO: Change this to the travel plans listing page if different
+      revalidatePath("/dashboard/my-travel-plans"); 
     }
 
     return result;
@@ -121,7 +121,7 @@ export async function updateTravelPlanAction(_currentState: any, formData: FormD
  */
 export async function deleteTravelPlanAction(id: string) {
   try {
-    const response = await serverFetch.delete(`/api/travel-plans/${id}`);
+    const response = await serverFetch.delete(`/travel-plan/${id}`);
     const result = await response.json();
     if (result.success) {
       revalidatePath("/dashboard/my-travel-plans");
