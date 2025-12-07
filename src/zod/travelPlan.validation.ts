@@ -12,3 +12,5 @@ export const createTravelPlanValidationZodSchema = z.object({
     message: "End date must be after start date",
     path: ["endDate"],
 });
+
+export const updateTravelPlanValidationZodSchema = createTravelPlanValidationZodSchema.partial();
