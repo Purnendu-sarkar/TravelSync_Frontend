@@ -158,3 +158,38 @@ export async function getMatchedTravelPlans(queryString?: string) {
     };
   }
 }
+
+
+
+/**
+ * GET SINGLE TRAVEL PLAN (public
+ */
+export async function getSingleTravelPlan(id: string) {
+  try {
+    const response = await serverFetch.get(`/travel-plans/${id}`);
+    return await response.json();
+  } catch (error: any) {
+    console.error(error);
+    return { success: false, message: "Failed to fetch plan details" };
+  }
+}
+
+/**
+ * SEND TRAVEL BUDDY REQUEST
+ * API: POST /travel-plans/:planId/request
+ */
+export async function sendTravelBuddyRequest(planId: string, message?: string) {
+  try {
+    const res = await serverFetch.post(`/travel-plans/${planId}/request`, {
+      body: JSON.stringify({ message: message || "" }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Something went wrong",
+    };
+  }
+}
