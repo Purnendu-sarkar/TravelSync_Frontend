@@ -193,3 +193,24 @@ export async function sendTravelBuddyRequest(planId: string, message?: string) {
     };
   }
 }
+
+
+/**
+ * GET MY SENT REQUESTS (My Matches)
+ * API: GET /api/travel-plans/my-requests
+ */
+export async function getMySentRequests(queryString?: string) {
+  try {
+    const response = await serverFetch.get(
+      `/travel-plans/my-requests${queryString ? `?${queryString}` : ""}`
+    );
+    const result = await response.json();
+    return result;
+  } catch (error: any) {
+    console.error("Failed to fetch sent requests:", error);
+    return {
+      success: false,
+      message: "Failed to load your requests",
+    };
+  }
+}
