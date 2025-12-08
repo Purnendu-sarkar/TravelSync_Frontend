@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ICreateTravelPlan {
   destination: string;
   startDate: string; // or Date if you parse it
@@ -8,28 +9,6 @@ export interface ICreateTravelPlan {
   description?: string;
 }
 
-
-// src/types/travelPlan.interface.ts (Updated)
-// export interface ITravelPlan {
-//   id: string;
-//   destination: string;
-//   startDate: string;
-//   endDate: string;
-//   budget: number;
-//   travelType: "ADVENTURE" | "LEISURE" | "BUSINESS" | "FAMILY" | "SOLO";
-//   itinerary?: string;
-//   description?: string;
-//   isDeleted: boolean;
-//   createdAt: string;
-//   updatedAt: string;
-// }
-
-// export type ICreateTravelPlan = {
-//   id?: string;
-// } & Omit<ITravelPlan, "isDeleted" | "createdAt" | "updatedAt">;
-
-
-// Based on your Prisma schema for TravelPlan
 export interface ITravelPlan {
   id: string;
   travelerId: string;
@@ -48,4 +27,5 @@ export interface ITravelPlan {
     email: string;
   };
   travelerPlanCount?: number;
+  buddyRequests?: any[];
 }

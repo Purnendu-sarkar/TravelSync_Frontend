@@ -15,7 +15,8 @@ export const travelPlanColumns: Column<ITravelPlan>[] = [
     header: "Dates",
     accessor: (plan) => (
       <span>
-        {new Date(plan.startDate).toLocaleDateString()} - {new Date(plan.endDate).toLocaleDateString()}
+        {new Date(plan.startDate).toLocaleDateString()} -{" "}
+        {new Date(plan.endDate).toLocaleDateString()}
       </span>
     ),
     sortKey: "startDate",

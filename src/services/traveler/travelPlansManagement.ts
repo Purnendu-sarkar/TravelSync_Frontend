@@ -13,7 +13,7 @@ import { createTravelPlanValidationZodSchema, updateTravelPlanValidationZodSchem
  */
 export async function getAllMyTravelPlans(queryString?: string) {
   try {
-    const response = await serverFetch.get(`/travel-plan/my-plans/${queryString ? `?${queryString}` : ""}`);
+    const response = await serverFetch.get(`/travel-plans/my-plans/${queryString ? `?${queryString}` : ""}`);
     const result = await response.json();
     return result;
   } catch (error: any) {
@@ -49,7 +49,7 @@ export const createTravelPlan = async (_currentState: any, formData: FormData): 
 
     const validatedPayload: any = validationResult.data;
 
-    const res = await serverFetch.post("/travel-plan", {
+    const res = await serverFetch.post("/travel-plans", {
       body: JSON.stringify(validatedPayload),
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export const createTravelPlan = async (_currentState: any, formData: FormData): 
     const result = await res.json();
 
     if (result.success) {
-      revalidatePath("/dashboard/my-travel-plans"); 
+      revalidatePath("/dashboard/my-travel-plans");
     }
 
     return result;
@@ -97,7 +97,7 @@ export async function updateTravelPlanAction(_currentState: any, formData: FormD
 
     const validatedPayload: any = validationResult.data;
 
-    const response = await serverFetch.patch(`/travel-plan/${id}`, {
+    const response = await serverFetch.patch(`/travel-plans/${id}`, {
       body: JSON.stringify(validatedPayload),
       headers: {
         "Content-Type": "application/json",
@@ -121,7 +121,7 @@ export async function updateTravelPlanAction(_currentState: any, formData: FormD
  */
 export async function deleteTravelPlanAction(id: string) {
   try {
-    const response = await serverFetch.delete(`/travel-plan/${id}`);
+    const response = await serverFetch.delete(`/travel-plans/${id}`);
     const result = await response.json();
     if (result.success) {
       revalidatePath("/dashboard/my-travel-plans");
@@ -131,6 +131,30 @@ export async function deleteTravelPlanAction(id: string) {
     return {
       success: false,
       message: process.env.NODE_ENV === "development" ? error.message : "Failed to delete travel plan",
+    };
+  }
+}
+
+
+/**
+ * GET MATCHED TRAVEL PLANS 
+ * API: GET /api/travel-plan/match
+ */
+export async function getMatchedTravelPlans(queryString?: string) {
+  try {
+    const response = await serverFetch.get(
+      `/travel-plans/match${queryString ? `?${queryString}` : ""}`
+    );
+    const result = await response.json();
+    return result;
+  } catch (error: any) {
+    console.log(error);
+    return {
+      success: false,
+      message: `${process.env.NODE_ENV === "development"
+        ? error.message
+        : "Failed to load matches"
+        }`,
     };
   }
 }
