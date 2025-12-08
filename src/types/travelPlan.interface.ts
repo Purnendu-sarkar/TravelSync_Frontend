@@ -26,6 +26,6 @@ export interface ITravelPlan {
     name: string;
     email: string;
   };
-  travelerPlanCount?: number;
+  buddyRequestsCount: number;
   buddyRequests?: any[];
 }

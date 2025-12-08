@@ -40,6 +40,7 @@ interface ManagementTableProps<T> {
   onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+  onViewRequests?: (row: T) => void;
   getRowKey: (row: T) => string;
   emptyMessage?: string;
   isRefreshing?: boolean;

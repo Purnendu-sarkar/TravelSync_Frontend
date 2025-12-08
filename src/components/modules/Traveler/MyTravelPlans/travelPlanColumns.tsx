@@ -4,8 +4,9 @@ import { DateCell } from "@/components/shared/cell/DateCell";
 import { Column } from "@/components/shared/ManagementTable";
 import { ITravelPlan } from "@/types/travelPlan.interface";
 
-
-export const travelPlanColumns: Column<ITravelPlan>[] = [
+export const travelPlanColumns = (
+  onViewRequests?: (plan: ITravelPlan) => void
+): Column<ITravelPlan>[] => [
   {
     header: "Destination",
     accessor: (plan) => plan.destination,
@@ -20,6 +21,18 @@ export const travelPlanColumns: Column<ITravelPlan>[] = [
       </span>
     ),
     sortKey: "startDate",
+  },
+  {
+    header: "Buddy Requests",
+    accessor: (plan) => (
+      <button
+        onClick={() => onViewRequests?.(plan)}
+        className="font-medium text-primary hover:underline"
+      >
+        {plan.buddyRequestsCount} request
+        {plan.buddyRequestsCount !== 1 ? "s" : ""}
+      </button>
+    ),
   },
   {
     header: "Budget",

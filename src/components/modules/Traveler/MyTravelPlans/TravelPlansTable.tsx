@@ -9,6 +9,7 @@ import TravelPlanEditDialog from "./TravelPlanEditDialog";
 import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
 import { deleteTravelPlanAction } from "@/services/traveler/travelPlansManagement";
 import { toast } from "sonner";
+import BuddyRequestsDialog from "./BuddyRequestsDialog";
 
 interface TravelPlansTableProps {
   travelPlans: ITravelPlan[];
@@ -22,6 +23,12 @@ const TravelPlansTable = ({ travelPlans }: TravelPlansTableProps) => {
   const [deletingTravelPlan, setDeletingTravelPlan] =
     useState<ITravelPlan | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedPlanForRequests, setSelectedPlanForRequests] =
+    useState<ITravelPlan | null>(null);
+
+  const handleViewRequests = (plan: ITravelPlan) => {
+    setSelectedPlanForRequests(plan);
+  };
 
   const handleView = (travelPlan: ITravelPlan) => {
     setViewingTravelPlan(travelPlan);
@@ -58,10 +65,11 @@ const TravelPlansTable = ({ travelPlans }: TravelPlansTableProps) => {
     <>
       <ManagementTable
         data={travelPlans}
-        columns={travelPlanColumns}
+        columns={travelPlanColumns(handleViewRequests)}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onViewRequests={handleViewRequests}
         getRowKey={(travelPlan) => travelPlan.id}
         emptyMessage="No travel plans found"
       />
@@ -89,6 +97,13 @@ const TravelPlansTable = ({ travelPlans }: TravelPlansTableProps) => {
         title="Delete Travel Plan"
         description="This action cannot be undone. Are you sure?"
         isDeleting={isDeleting}
+      />
+
+      <BuddyRequestsDialog
+        open={!!selectedPlanForRequests}
+        onOpenChange={(open) => !open && setSelectedPlanForRequests(null)}
+        planId={selectedPlanForRequests?.id}
+        destination={selectedPlanForRequests?.destination}
       />
     </>
   );
