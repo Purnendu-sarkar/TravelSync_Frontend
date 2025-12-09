@@ -6,8 +6,11 @@ import { deleteCookie, getCookie, setCookie } from "./tokenHandlers";
 import { parse } from "cookie";
 import { verifyAccessToken } from "@/lib/jwtHanlders";
 import { zodValidator } from "@/lib/zodValidator";
-import { forgotPasswordSchema } from "@/zod/auth.validation";
-
+import { forgotPasswordSchema, resetPasswordSchema } from "@/zod/auth.validation";
+import { UserRole } from "@/lib/auth-utils";
+import { getUserInfo } from './getUserInfo';
+import { revalidateTag } from 'next/cache';
+import jwt  from 'jsonwebtoken';
 
 export async function createTraveler(_prevState: any, formData: FormData) {
     try {
@@ -230,6 +233,99 @@ export async function forgotPassword(_prevState: any, formData: FormData) {
         return {
             success: false,
             message: error?.message || "Something went wrong",
+        };
+    }
+}
+
+export async function resetPassword(_prevState: any, formData: FormData) {
+    const token = formData.get('token')?.toString() || null;
+
+    // Build validation payload
+    const validationPayload = {
+        newPassword: formData.get("newPassword") as string,
+        confirmPassword: formData.get("confirmPassword") as string,
+    };
+
+    // Validate
+    const validatedPayload = zodValidator(validationPayload, resetPasswordSchema);
+
+    if (!validatedPayload.success && validatedPayload.errors) {
+        return {
+            success: false,
+            message: "Validation failed",
+            formData: validationPayload,
+            errors: validatedPayload.errors,
+        };
+    }
+
+    try {
+        const headers: HeadersInit = { "Content-Type": "application/json" };
+        const bodyPayload: any = { password: validatedPayload.data?.newPassword };
+        let email: string | undefined;
+        let userRole: UserRole | undefined;
+
+        if (token) {
+            // Forgot password case: no Authorization header, token in body
+            // Decode token to get email
+            const decodedToken = jwt.decode(token) as { email?: string, role?: UserRole };
+            email = decodedToken?.email;
+            userRole = decodedToken?.role;
+            if (!email) {
+                throw new Error("Invalid token: no email found");
+            }
+            bodyPayload.email = email;
+            bodyPayload.token = token;
+        } else {
+            // Need password change case: use access token in header
+            const accessToken = await getCookie("accessToken");
+            if (!accessToken) {
+                throw new Error("User not authenticated");
+            }
+            headers["Authorization"] = `Bearer ${accessToken}`;
+
+            const verifiedToken = jwt.verify(accessToken as string, process.env.JWT_ACCESS_SECRET!) as jwt.JwtPayload;
+            email = verifiedToken.email;
+            userRole = verifiedToken.role;
+            bodyPayload.email = email; // Optional, but add for consistency
+        }
+
+        const user = await getUserInfo();
+
+        // API Call
+        const response = await serverFetch.post("/auth/reset-password", {
+            body: JSON.stringify(bodyPayload),
+            headers,
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || "Reset password failed");
+        }
+
+        if (result.success) {
+            revalidateTag("user-info", { expire: 0 });
+        }
+
+        if (!userRole) {
+            userRole = user?.role || "TRAVELER"; // Fallback
+        }
+
+        return {
+  success: true,
+  message: "✅ Password successfully reset! Login now",
+  redirectTo: "/login",
+};
+
+    } catch (error: any) {
+        // Re-throw NEXT_REDIRECT errors so Next.js can handle them
+        if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+            throw error;
+        }
+        return {
+            success: false,
+            message: error?.message || "Something went wrong",
+            formData: validationPayload,
         };
     }
 }

@@ -34,6 +34,18 @@ export const loginValidationZodSchema = z.object({
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
+    email: z.string().email({ message: "Invalid email address" }),
 });
+
+export const resetPasswordSchema = z
+    .object({
+        newPassword: z.string().min(6, "Password must be at least 6 characters"),
+        confirmPassword: z
+            .string()
+            .min(6, "Password must be at least 6 characters"),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ["confirmPassword"],
+    });
 
