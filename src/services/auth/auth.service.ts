@@ -6,11 +6,11 @@ import { deleteCookie, getCookie, setCookie } from "./tokenHandlers";
 import { parse } from "cookie";
 import { verifyAccessToken } from "@/lib/jwtHanlders";
 import { zodValidator } from "@/lib/zodValidator";
-import { forgotPasswordSchema, resetPasswordSchema } from "@/zod/auth.validation";
+import { changePasswordSchema, forgotPasswordSchema, resetPasswordSchema } from "@/zod/auth.validation";
 import { UserRole } from "@/lib/auth-utils";
 import { getUserInfo } from './getUserInfo';
 import { revalidateTag } from 'next/cache';
-import jwt  from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 export async function createTraveler(_prevState: any, formData: FormData) {
     try {
@@ -312,10 +312,10 @@ export async function resetPassword(_prevState: any, formData: FormData) {
         }
 
         return {
-  success: true,
-  message: "✅ Password successfully reset! Login now",
-  redirectTo: "/login",
-};
+            success: true,
+            message: "✅ Password successfully reset! Login now",
+            redirectTo: "/login",
+        };
 
     } catch (error: any) {
         // Re-throw NEXT_REDIRECT errors so Next.js can handle them
@@ -330,5 +330,58 @@ export async function resetPassword(_prevState: any, formData: FormData) {
     }
 }
 
+export async function changePassword(_prevState: any, formData: FormData) {
+    const validationPayload = {
+        oldPassword: formData.get("oldPassword") as string,
+        newPassword: formData.get("newPassword") as string,
+        confirmPassword: formData.get("confirmPassword") as string,
+    };
 
+    // Validate with zod
+    const validatedPayload = zodValidator(validationPayload, changePasswordSchema);
+
+    if (!validatedPayload.success && validatedPayload.errors) {
+        return {
+            success: false,
+            message: "Validation failed",
+            errors: validatedPayload.errors,
+        };
+    }
+
+    try {
+        const accessToken = await getCookie("accessToken");
+        if (!accessToken) {
+            throw new Error("User not authenticated");
+        }
+
+        const response = await serverFetch.post("/auth/change-password", {
+            body: JSON.stringify({
+                oldPassword: validatedPayload.data?.oldPassword,
+                newPassword: validatedPayload.data?.newPassword,
+            }),
+            headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || "Change password failed");
+        }
+
+        revalidateTag("user-info", { expire: 0 });
+
+        return {
+            success: true,
+            message: "Password changed successfully",
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error?.message || "Something went wrong",
+        };
+    }
+}
 
