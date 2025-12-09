@@ -32,3 +32,8 @@ export const loginValidationZodSchema = z.object({
         error: "Password must be at most 100 characters long",
     }),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+

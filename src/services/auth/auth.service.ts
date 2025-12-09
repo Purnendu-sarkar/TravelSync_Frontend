@@ -5,76 +5,79 @@ import { serverFetch } from "@/lib/server-fetch";
 import { deleteCookie, getCookie, setCookie } from "./tokenHandlers";
 import { parse } from "cookie";
 import { verifyAccessToken } from "@/lib/jwtHanlders";
+import { zodValidator } from "@/lib/zodValidator";
+import { forgotPasswordSchema } from "@/zod/auth.validation";
+
 
 export async function createTraveler(_prevState: any, formData: FormData) {
-  try {
-    const name = formData.get("name")?.toString();
-    const email = formData.get("email")?.toString();
-    const password = formData.get("password")?.toString();
-    const confirmPassword = formData.get("confirmPassword")?.toString();
-    const gender = formData.get("gender")?.toString();
-    const location = formData.get("location")?.toString();
+    try {
+        const name = formData.get("name")?.toString();
+        const email = formData.get("email")?.toString();
+        const password = formData.get("password")?.toString();
+        const confirmPassword = formData.get("confirmPassword")?.toString();
+        const gender = formData.get("gender")?.toString();
+        const location = formData.get("location")?.toString();
 
-    // ✅ Basic Validation
-    if (!name || !email || !password || !confirmPassword || !gender || !location) {
-      return {
-        success: false,
-        message: "All fields are required",
-      };
+        // ✅ Basic Validation
+        if (!name || !email || !password || !confirmPassword || !gender || !location) {
+            return {
+                success: false,
+                message: "All fields are required",
+            };
+        }
+
+        // ✅ Confirm Password Check
+        if (password !== confirmPassword) {
+            return {
+                success: false,
+                message: "Password and Confirm Password do not match",
+            };
+        }
+
+        const traveler = {
+            name,
+            email,
+            gender,
+            location,
+        };
+
+        const payload = {
+            password,
+            traveler,
+        };
+
+        const uploadFormData = new FormData();
+        uploadFormData.append("data", JSON.stringify(payload));
+
+        // ✅ Profile Photo
+        const file = formData.get("file");
+        if (file instanceof File && file.size > 0) {
+            uploadFormData.append("file", file);
+        }
+
+        const response = await serverFetch.post("/user/create-traveler", {
+            body: uploadFormData,
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            return {
+                success: false,
+                message: result.message,
+            };
+        }
+
+        return {
+            success: true,
+            data: result.data,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error?.message || "Something went wrong",
+        };
     }
-
-    // ✅ Confirm Password Check
-    if (password !== confirmPassword) {
-      return {
-        success: false,
-        message: "Password and Confirm Password do not match",
-      };
-    }
-
-    const traveler = {
-      name,
-      email,
-      gender,
-      location,
-    };
-
-    const payload = {
-      password,
-      traveler,
-    };
-
-    const uploadFormData = new FormData();
-    uploadFormData.append("data", JSON.stringify(payload));
-
-    // ✅ Profile Photo
-    const file = formData.get("file");
-    if (file instanceof File && file.size > 0) {
-      uploadFormData.append("file", file);
-    }
-
-    const response = await serverFetch.post("/user/create-traveler", {
-      body: uploadFormData,
-    });
-
-    const result = await response.json();
-
-    if (!result.success) {
-      return {
-        success: false,
-        message: result.message,
-      };
-    }
-
-    return {
-      success: true,
-      data: result.data,
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error?.message || "Something went wrong",
-    };
-  }
 }
 
 export async function getNewAccessToken() {
@@ -190,3 +193,46 @@ export async function getNewAccessToken() {
     }
 
 }
+
+export async function forgotPassword(_prevState: any, formData: FormData) {
+    const validationPayload = {
+        email: formData.get("email") as string,
+    };
+
+    // Validate with zod
+    const validatedPayload = zodValidator(validationPayload, forgotPasswordSchema);
+
+    if (!validatedPayload.success && validatedPayload.errors) {
+        return {
+            success: false,
+            message: "Validation failed",
+            errors: validatedPayload.errors,
+        };
+    }
+
+    try {
+        const response = await serverFetch.post("/auth/forgot-password", {
+            body: JSON.stringify({ email: validatedPayload.data?.email }),
+            headers: { "Content-Type": "application/json" },
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || "Forgot password request failed");
+        }
+
+        return {
+            success: true,
+            message: result.message,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error?.message || "Something went wrong",
+        };
+    }
+}
+
+
+
