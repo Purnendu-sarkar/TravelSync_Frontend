@@ -28,4 +28,5 @@ export interface ITravelPlan {
   };
   buddyRequestsCount: number;
   buddyRequests?: any[];
+  travelerPlanCount?: number;
 }

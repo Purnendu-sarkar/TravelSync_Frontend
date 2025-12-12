@@ -1,4 +1,5 @@
 "use client";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { Suspense, useTransition } from "react";
 const travelTypes = ["ADVENTURE", "LEISURE", "BUSINESS", "FAMILY", "SOLO"];
 export default function ExploreFilter() {
   const router = useRouter();
@@ -28,7 +29,8 @@ export default function ExploreFilter() {
     });
   };
   return (
-    <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border space-y-4">
+   <Suspense>
+     <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border space-y-4">
       <h3 className="font-semibold text-lg">Find Your Perfect Match</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
@@ -84,5 +86,6 @@ export default function ExploreFilter() {
         </div>
       </div>
     </div>
+   </Suspense>
   );
 }

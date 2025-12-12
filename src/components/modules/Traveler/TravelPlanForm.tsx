@@ -126,7 +126,7 @@ const TravelPlanForm = ({
             name="itinerary"
             className="border p-2 rounded w-full"
             rows={4}
-            defaultValue={initialData?.itinerary}
+            defaultValue={initialData?.itinerary ?? ""}
             placeholder="Detailed plan..."
           />
           <InputFieldError field="itinerary" state={state} />
@@ -139,7 +139,7 @@ const TravelPlanForm = ({
             name="description"
             className="border p-2 rounded w-full"
             rows={4}
-            defaultValue={initialData?.description}
+            defaultValue={initialData?.description ?? ""}
             placeholder="Additional details..."
           />
           <InputFieldError field="description" state={state} />
