@@ -14,7 +14,7 @@ export default function HeroSection() {
       </div>
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <span className="inline-block py-1 px-3 rounded-full bg-teal-500/20 text-teal-300 text-sm font-semibold mb-4 backdrop-blur-sm border border-teal-500/30">
-          We d love to hear from you
+          We’d love to hear from you.
         </span>
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
           Get in Touch

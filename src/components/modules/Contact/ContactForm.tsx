@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { useForm } from "react-hook-form";
 import {
   Send,
   Mail,
@@ -16,19 +18,38 @@ import {
   Coffee,
   Building2,
 } from "lucide-react";
+import { countryCodes } from "./countryCodes";
 
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const [validationError, setValidationError] = useState("");
+
+  const onSubmit = async (data: any) => {
+    console.log("FORM DATA 👉", data);
+
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setValidationError("");
+
+    const sendResponse = await fetch("/api/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (sendResponse.ok) {
+      setIsSuccess(true);
+    } else {
+      alert("Error: Problem sending email.");
+    }
+
     setIsSubmitting(false);
-    setIsSuccess(true);
-    console.log("Form submitted");
   };
 
   const interests = [
@@ -92,19 +113,33 @@ export default function ContactForm() {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   First name
                 </label>
-                <Input placeholder="Jane" required />
+                <Input
+                  placeholder="Jane"
+                  {...register("firstName", {
+                    required: "First name required.",
+                  })}
+                />
+
+                {errors.firstName && (
+                  <p className="text-red-600">
+                    {errors.firstName.message as string}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Last name
                 </label>
-                <Input placeholder="Doe" required />
+                <Input
+                  placeholder="Doe"
+                  {...register("lastName", { required: "Last name required." })}
+                />
               </div>
             </div>
             <div>
@@ -116,9 +151,21 @@ export default function ContactForm() {
                 <Input
                   type="email"
                   placeholder="jane@example.com"
-                  required
                   className="pl-10"
+                  {...register("email", {
+                    required: "Email required",
+                    pattern: {
+                      value: /^\S+@\S+$/i,
+                      message: "Please enter a valid email.",
+                    },
+                  })}
                 />
+
+                {errors.email && (
+                  <p className="text-red-600 text-sm">
+                    {errors.email.message as string}
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -126,11 +173,15 @@ export default function ContactForm() {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   Country Code
                 </label>
-                <select className="block w-full rounded-lg border border-gray-300 shadow-sm py-2.5 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white">
-                  <option>US (+1)</option>
-                  <option>UK (+44)</option>
-                  <option>CA (+1)</option>
-                  <option>AU (+61)</option>
+                <select
+                  className="block w-full rounded-lg border px-3 py-2.5"
+                  {...register("countryCode", { required: true })}
+                >
+                  {countryCodes.map((c, index) => (
+                    <option key={`${c.code}-${index}`} value={c.code}>
+                      {c.name} ({c.code})
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -143,6 +194,7 @@ export default function ContactForm() {
                     type="tel"
                     placeholder="(555) 000-0000"
                     className="pl-10"
+                    {...register("phone", { required: true })}
                   />
                 </div>
               </div>
@@ -159,8 +211,10 @@ export default function ContactForm() {
                   >
                     <input
                       type="checkbox"
-                      className="rounded text-teal-600 focus:ring-teal-500"
+                      value={interest.id}
+                      {...register("interests")}
                     />
+
                     <span className="text-sm text-gray-700 flex items-center gap-1.5">
                       {interest.icon}
                       {interest.label}
@@ -175,10 +229,13 @@ export default function ContactForm() {
               </label>
               <Textarea
                 rows={4}
-                required
                 placeholder="Tell us about your travel plans..."
+                {...register("message", { required: "Write a message" })}
               />
             </div>
+            {validationError && (
+              <p className="text-red-600">{validationError}</p>
+            )}
             <Button
               type="submit"
               className="w-full"
