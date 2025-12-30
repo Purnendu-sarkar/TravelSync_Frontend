@@ -9,19 +9,42 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { isValidRedirectForRole } from "@/lib/auth-utils";
 import { loginUser } from "@/services/auth/loginUser";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 
 const LoginForm = ({ redirect }: { redirect?: string }) => {
   const [state, formAction, isPending] = useActionState(loginUser, null);
+  const router = useRouter();
 
   useEffect(() => {
-    if (state && !state.success && state.message) {
-      console.log("error", state.message);
+    if (state?.success) {
+      toast.success("Login successful!");
+
+      let targetRoute = state.defaultRoute;
+
+      // need password change?
+      if (state.needPasswordChange) {
+        if (state.redirectTo && isValidRedirectForRole(state.redirectTo, state.role)) {
+          router.push(`/reset-password?redirect=${state.redirectTo}`);
+        } else {
+          router.push("/reset-password");
+        }
+        return;
+      }
+
+      // normal redirect
+      if (state.redirectTo && isValidRedirectForRole(state.redirectTo, state.role)) {
+        targetRoute = state.redirectTo;
+      }
+
+      router.push(`${targetRoute}?loggedIn=true`);
+    } else if (state && !state.success && state.message) {
       toast.error(state.message);
     }
-  }, [state]);
+  }, [state, router]);
 
   return (
     <form action={formAction}>
