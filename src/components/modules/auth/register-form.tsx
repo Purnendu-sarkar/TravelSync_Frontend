@@ -12,15 +12,45 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { isValidRedirectForRole } from "@/lib/auth-utils";
 
 const RegisterForm = () => {
   const [state, formAction, isPending] = useActionState(registerTraveler, null);
-
+  const router = useRouter();
   useEffect(() => {
-    if (state && !state.success && state.message) {
+    if (state?.success) {
+      toast.success("Registration successful! Logging in...");
+
+      let targetRoute = state.defaultRoute || "/dashboard";
+
+      // Need password change?
+      if (state.needPasswordChange) {
+        if (
+          state.redirectTo &&
+          isValidRedirectForRole(state.redirectTo, state.role)
+        ) {
+          router.push(`/reset-password?redirect=${state.redirectTo}`);
+        } else {
+          router.push("/reset-password");
+        }
+        return;
+      }
+
+      // Normal redirect
+      if (
+        state.redirectTo &&
+        isValidRedirectForRole(state.redirectTo, state.role)
+      ) {
+        targetRoute = state.redirectTo;
+      }
+
+      router.push(`${targetRoute}?loggedIn=true`);
+    } else if (state && !state.success && state.message) {
       toast.error(state.message);
     }
-  }, [state]);
+  }, [state, router]);
+
   return (
     <form action={formAction}>
       <FieldGroup>

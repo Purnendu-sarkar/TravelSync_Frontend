@@ -50,7 +50,12 @@ export const registerTraveler = async (_currentState: any, formData: any): Promi
 
 
         if (result.success) {
-            await loginUser(_currentState, formData);
+            const loginResult = await loginUser(_currentState, formData);
+            if (loginResult.success) {
+                return loginResult;
+            } else {
+                return { success: false, message: "Registration successful, but auto-login failed. Please log in manually." };
+            }
         }
 
         return result;
