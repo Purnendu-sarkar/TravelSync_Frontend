@@ -214,3 +214,36 @@ export async function getMySentRequests(queryString?: string) {
     };
   }
 }
+
+
+export const getPublicTravelPlans = async (
+  params: { limit?: number } = {}
+) => {
+  try {
+    const query = new URLSearchParams(params as any).toString();
+    const res = await serverFetch.get(`/travel-plans/public?${query}`);
+    const json = await res.json();
+
+    if (!res.ok || json.success === false) {
+      return {
+        success: false,
+        message: json.message || "No public travel plans found",
+        data: [],
+      };
+    }
+
+    return {
+      success: true,
+      data: json.data ?? [],
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to load public travel plans",
+      data: [],
+    };
+  }
+};
