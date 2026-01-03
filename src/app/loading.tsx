@@ -32,7 +32,7 @@ const loadingCircleTransition: Transition = {
 
 export default function Loading() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-sky-100 to-sky-300 dark:from-sky-900 dark:to-sky-700">
+    <div className="flex flex-col items-center justify-center ">
       <motion.div
         className="flex space-x-2 mb-8"
         variants={loadingContainerVariants}
