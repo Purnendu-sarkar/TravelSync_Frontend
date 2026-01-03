@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server"
 import { serverFetch } from "@/lib/server-fetch";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 /**
  * GET ALL TRAVELERS
@@ -9,7 +9,19 @@ import { revalidatePath } from "next/cache";
  */
 export async function getAllTravelers(queryString?: string) {
     try {
-        const response = await serverFetch.get(`/user${queryString ? `?${queryString}` : ""}`);
+        const searchParams = new URLSearchParams(queryString);
+        const page = searchParams.get("page") || "1";
+        const searchTerm = searchParams.get("searchTerm") || "all";
+        const response = await serverFetch.get(`/user${queryString ? `?${queryString}` : ""}`, {
+            next: {
+                tags: [
+                    "travelers-list",
+                    `travelers-page-${page}`,
+                    `travelers-search-${searchTerm}`,
+                ],
+                revalidate: 180
+            }
+        });
         const result = await response.json();
         return result;
     } catch (error: any) {
@@ -37,7 +49,9 @@ export async function updateTravelerStatusAction(email: string, status: string) 
 
         if (result.success) {
             // 🔥 IMPORTANT 🔥
-            revalidatePath("/admin/dashboard/travelers-management");
+            revalidateTag('travelers-list', { expire: 0 });
+            revalidateTag('travelers-page-1', { expire: 0 });
+            revalidateTag('admin-dashboard-meta', { expire: 0 });
         }
 
         return result;
@@ -60,7 +74,9 @@ export async function deleteTravelerAction(email: string) {
         const result = await response.json();
 
         if (result.success) {
-            revalidatePath("/admin/dashboard/travelers-management");
+            revalidateTag('travelers-list', { expire: 0 });
+            revalidateTag('travelers-page-1', { expire: 0 });
+            revalidateTag('admin-dashboard-meta', { expire: 0 });
         }
 
         return result;
@@ -71,5 +87,3 @@ export async function deleteTravelerAction(email: string) {
         };
     }
 }
-
-

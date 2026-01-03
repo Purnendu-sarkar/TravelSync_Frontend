@@ -1,9 +1,8 @@
-// src/services/traveler/travelPlansManagement.ts (Updated)
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { serverFetch } from "@/lib/server-fetch";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { zodValidator } from "@/lib/zodValidator";
 import { createTravelPlanValidationZodSchema, updateTravelPlanValidationZodSchema } from "@/zod/travelPlan.validation";
 
@@ -13,7 +12,19 @@ import { createTravelPlanValidationZodSchema, updateTravelPlanValidationZodSchem
  */
 export async function getAllMyTravelPlans(queryString?: string) {
   try {
-    const response = await serverFetch.get(`/travel-plans/my-plans/${queryString ? `?${queryString}` : ""}`);
+    const searchParams = new URLSearchParams(queryString);
+    const page = searchParams.get("page") || "1";
+    const searchTerm = searchParams.get("searchTerm") || "all";
+    const response = await serverFetch.get(`/travel-plans/my-plans/${queryString ? `?${queryString}` : ""}`, {
+      next: {
+        tags: [
+          "my-travel-plans-list",
+          `my-travel-plans-page-${page}`,
+          `my-travel-plans-search-${searchTerm}`,
+        ],
+        revalidate: 180
+      }
+    });
     const result = await response.json();
     return result;
   } catch (error: any) {
@@ -59,7 +70,10 @@ export const createTravelPlan = async (_currentState: any, formData: FormData): 
     const result = await res.json();
 
     if (result.success) {
-      revalidatePath("/dashboard/my-travel-plans");
+      revalidateTag('my-travel-plans-list', { expire: 0 });
+      revalidateTag('my-travel-plans-page-1', { expire: 0 });
+      revalidateTag('matched-travel-plans', { expire: 0 });
+      revalidateTag('public-travel-plans', { expire: 0 });
     }
 
     return result;
@@ -105,7 +119,10 @@ export async function updateTravelPlanAction(_currentState: any, formData: FormD
     });
     const result = await response.json();
     if (result.success) {
-      revalidatePath("/dashboard/my-travel-plans");
+      revalidateTag('my-travel-plans-list', { expire: 0 });
+      revalidateTag('my-travel-plans-page-1', { expire: 0 });
+      revalidateTag('matched-travel-plans', { expire: 0 });
+      revalidateTag('public-travel-plans', { expire: 0 });
     }
     return result;
   } catch (error: any) {
@@ -124,7 +141,10 @@ export async function deleteTravelPlanAction(id: string) {
     const response = await serverFetch.delete(`/travel-plans/${id}`);
     const result = await response.json();
     if (result.success) {
-      revalidatePath("/dashboard/my-travel-plans");
+      revalidateTag('my-travel-plans-list', { expire: 0 });
+      revalidateTag('my-travel-plans-page-1', { expire: 0 });
+      revalidateTag('matched-travel-plans', { expire: 0 });
+      revalidateTag('public-travel-plans', { expire: 0 });
     }
     return result;
   } catch (error: any) {
@@ -142,8 +162,18 @@ export async function deleteTravelPlanAction(id: string) {
  */
 export async function getMatchedTravelPlans(queryString?: string) {
   try {
+    const searchParams = new URLSearchParams(queryString);
+    const page = searchParams.get("page") || "1";
     const response = await serverFetch.get(
-      `/travel-plans/match${queryString ? `?${queryString}` : ""}`
+      `/travel-plans/match${queryString ? `?${queryString}` : ""}`, {
+      next: {
+        tags: [
+          "matched-travel-plans",
+          `matched-travel-plans-page-${page}`,
+        ],
+        revalidate: 180
+      }
+    }
     );
     const result = await response.json();
     return result;
@@ -166,7 +196,12 @@ export async function getMatchedTravelPlans(queryString?: string) {
  */
 export async function getSingleTravelPlan(id: string) {
   try {
-    const response = await serverFetch.get(`/travel-plans/${id}`);
+    const response = await serverFetch.get(`/travel-plans/${id}`, {
+      next: {
+        tags: [`travel-plan-${id}`],
+        revalidate: 180
+      }
+    });
     return await response.json();
   } catch (error: any) {
     console.error(error);
@@ -185,6 +220,10 @@ export async function sendTravelBuddyRequest(planId: string, message?: string) {
       headers: { "Content-Type": "application/json" },
     });
     const result = await res.json();
+    if (result.success) {
+      revalidateTag('matched-travel-plans', { expire: 0 });
+      revalidateTag('my-sent-requests', { expire: 0 });
+    }
     return result;
   } catch (error: any) {
     return {
@@ -201,8 +240,18 @@ export async function sendTravelBuddyRequest(planId: string, message?: string) {
  */
 export async function getMySentRequests(queryString?: string) {
   try {
+    const searchParams = new URLSearchParams(queryString);
+    const page = searchParams.get("page") || "1";
     const response = await serverFetch.get(
-      `/travel-plans/my-requests${queryString ? `?${queryString}` : ""}`
+      `/travel-plans/my-requests${queryString ? `?${queryString}` : ""}`, {
+      next: {
+        tags: [
+          "my-sent-requests",
+          `my-sent-requests-page-${page}`,
+        ],
+        revalidate: 180
+      }
+    }
     );
     const result = await response.json();
     return result;
@@ -221,7 +270,12 @@ export const getPublicTravelPlans = async (
 ) => {
   try {
     const query = new URLSearchParams(params as any).toString();
-    const res = await serverFetch.get(`/travel-plans/public?${query}`);
+    const res = await serverFetch.get(`/travel-plans/public?${query}`, {
+      next: {
+        tags: ["public-travel-plans"],
+        revalidate: 180
+      }
+    });
     const json = await res.json();
 
     if (!res.ok || json.success === false) {

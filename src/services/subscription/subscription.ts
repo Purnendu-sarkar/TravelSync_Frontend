@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { serverFetch } from "@/lib/server-fetch";
+import { revalidateTag } from "next/cache";
 
 /**
  * GET SUBSCRIPTION PLANS
@@ -8,7 +9,12 @@ import { serverFetch } from "@/lib/server-fetch";
  */
 export async function getSubscriptionPlans() {
   try {
-    const response = await serverFetch.get("/subscriptions/plans");
+    const response = await serverFetch.get("/subscriptions/plans", {
+      next: {
+        tags: ["subscription-plans"],
+        revalidate: 180
+      }
+    });
     const result = await response.json();
     return result;
   } catch (error: any) {
@@ -31,6 +37,10 @@ export async function createCheckoutSession(planType: string) {
       headers: { "Content-Type": "application/json" },
     });
     const result = await res.json();
+    if (result.success) {
+      revalidateTag('subscription-plans', { expire: 0 });
+      revalidateTag('my-subscription-status', { expire: 0 });
+    }
     return result;
   } catch (error: any) {
     return {
@@ -46,7 +56,12 @@ export async function createCheckoutSession(planType: string) {
  */
 export async function getMySubscriptionStatus() {
   try {
-    const response = await serverFetch.get("/subscriptions/my-status");
+    const response = await serverFetch.get("/subscriptions/my-status", {
+      next: {
+        tags: ["my-subscription-status"],
+        revalidate: 180
+      }
+    });
     const result = await response.json();
     return result;
   } catch (error: any) {

@@ -6,7 +6,12 @@ export const getPublicTopTravelers = async (
 ) => {
     try {
         const query = new URLSearchParams(params as any).toString();
-        const res = await serverFetch.get(`/user/public-top?${query}`);
+        const res = await serverFetch.get(`/user/public-top?${query}`, {
+            next: {
+                tags: ["public-top-travelers"],
+                revalidate: 180
+            }
+        });
         const json = await res.json();
 
         if (!res.ok || json.success === false) {

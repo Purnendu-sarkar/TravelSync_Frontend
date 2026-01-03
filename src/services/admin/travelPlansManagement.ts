@@ -2,7 +2,7 @@
 "use server";
 
 import { serverFetch } from "@/lib/server-fetch";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 /**
  * GET ALL TRAVEL PLANS
@@ -10,7 +10,19 @@ import { revalidatePath } from "next/cache";
  */
 export async function getAllTravelPlans(queryString?: string) {
   try {
-    const response = await serverFetch.get(`/travel-plan${queryString ? `?${queryString}` : ""}`);
+    const searchParams = new URLSearchParams(queryString);
+    const page = searchParams.get("page") || "1";
+    const searchTerm = searchParams.get("searchTerm") || "all";
+    const response = await serverFetch.get(`/travel-plan${queryString ? `?${queryString}` : ""}`, {
+      next: {
+        tags: [
+          "travel-plans-list",
+          `travel-plans-page-${page}`,
+          `travel-plans-search-${searchTerm}`,
+        ],
+        revalidate: 180
+      }
+    });
     const result = await response.json();
     return result;
   } catch (error: any) {
@@ -28,7 +40,12 @@ export async function getAllTravelPlans(queryString?: string) {
  */
 export async function getSingleTravelPlanForAdmin(id: string) {
   try {
-    const response = await serverFetch.get(`/travel-plan/admin/${id}`);
+    const response = await serverFetch.get(`/travel-plan/admin/${id}`, {
+      next: {
+        tags: [`travel-plan-${id}`, "travel-plans-list"],
+        revalidate: 180
+      }
+    });
     const result = await response.json();
     return result;
   } catch (error: any) {
@@ -49,7 +66,9 @@ export async function deleteTravelPlanAction(id: string) {
     const response = await serverFetch.delete(`/travel-plan/admin/${id}`);
     const result = await response.json();
     if (result.success) {
-      revalidatePath("/admin/dashboard/travel-plans-management");
+      revalidateTag('travel-plans-list', { expire: 0 });
+      revalidateTag('travel-plans-page-1', { expire: 0 });
+      revalidateTag('admin-dashboard-meta', { expire: 0 });
     }
     return result;
   } catch (error: any) {
