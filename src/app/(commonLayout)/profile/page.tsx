@@ -1,15 +1,26 @@
-export const dynamic = "force-dynamic";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
+import { useEffect, useState } from "react";
 import { getMySubscriptionStatus } from "@/services/subscription/subscription";
-import { Badge } from "@/components/ui/badge"; // Assuming you have Badge component
+import { Badge } from "@/components/ui/badge";
 
-const ProfilePage = async () => {
-  const status = await getMySubscriptionStatus();
-  console.log(status.data);
+const ProfilePage = () => {
+  const [status, setStatus] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      const res = await getMySubscriptionStatus();
+      setStatus(res);
+    };
+
+    fetchStatus();
+  }, []);
+
+  if (!status) return null;
 
   return (
     <div>
-      {/* Other profile info */}
       {status.success && status.data.isVerified && (
         <Badge variant="outline" className="bg-green-500 text-white">
           Verified
