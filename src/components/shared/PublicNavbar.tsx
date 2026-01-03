@@ -4,14 +4,18 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogIn, Bell, Search, ShieldCheck } from "lucide-react";
+import { Menu, X, LogIn, Bell, Search, ShieldCheck, User } from "lucide-react";
+
+import { getUserInfo } from "@/services/auth/getUserInfo";
+import { logoutUser } from "@/services/auth/logoutUser";
+import UserDropdown from "../modules/Dashboard/UserDropdown";
 
 type UserRole = "TRAVELER" | "ADMIN";
 
 type CurrentUser = {
   id: string;
   name: string;
-  email?: string;
+  email: string;
   profilePhoto?: string;
   role: UserRole;
 };
@@ -34,53 +38,72 @@ export default function PublicNavbar({
   );
   const [loadingUser, setLoadingUser] = useState<boolean>(!initialUser);
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/explore", label: "Explore" },
-    { href: "/travel-plans", label: "Travel Plans" },
-    { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact" },
-  ];
+  const getNavItems = () => {
+    if (loadingUser) return [];
+    if (!user) {
+      return [
+        { href: "/", label: "Home" },
+        { href: "/explore", label: "Explore Travel" },
+        { href: "/subscription", label: "Subscription" },
+        { href: "/contact", label: "Contact" },
+      ];
+    } else if (user.role === "ADMIN") {
+      return [
+        { href: "/", label: "Home" },
+        { href: "/explore", label: "Explore Travel" },
+        { href: "/admin/dashboard", label: "Admin Dashboard" },
+        {
+          href: "/admin/dashboard/travelers-management",
+          label: "Manage Users",
+        },
+        {
+          href: "/admin/dashboard/travel-plans-management",
+          label: "Manage Travel Plans",
+        },
+        { href: "/subscription", label: "Subscription" },
+        { href: "/contact", label: "Contact" },
+      ];
+    } else {
+      return [
+        { href: "/", label: "Home" },
+        { href: "/explore", label: "Explore Travel" },
+        { href: "/subscription", label: "Subscription" },
+        { href: "/dashboard", label: "Dashboard" },
+        { href: "/contact", label: "Contact" },
+      ];
+    }
+  };
 
-  // try to fetch current user from a simple endpoint if initialUser not provided
+  const navItems = getNavItems();
+
+  // Fetch current user using getUserInfo if initialUser not provided
   useEffect(() => {
     if (initialUser !== undefined) return;
 
-    let mounted = true;
-
-    (async () => {
+    const fetchUser = async () => {
+      setLoadingUser(true);
       try {
-        const res = await fetch("/api/auth/me");
-
-        if (!mounted) return;
-
-        if (!res.ok) {
+        const data = await getUserInfo();
+        if (data.id === "") {
           setUser(null);
-          return;
+        } else {
+          setUser({
+            id: data.id,
+            name: data.name || data.email || "Traveler",
+            email: data.email,
+            profilePhoto: data.profilePhoto,
+            role: data.role || "TRAVELER",
+          });
         }
-
-        const data = await res.json();
-
-        if (!mounted) return;
-
-        setUser({
-          id: data.id,
-          name: data.name || data.email || "Traveler",
-          email: data.email,
-          profilePhoto: data.profilePhoto,
-          role: data.role || "TRAVELER",
-        });
       } catch (error) {
         console.log(error);
-        if (mounted) setUser(null);
+        setUser(null);
       } finally {
-        if (mounted) setLoadingUser(false);
+        setLoadingUser(false);
       }
-    })();
-
-    return () => {
-      mounted = false;
     };
+
+    fetchUser();
   }, [initialUser]);
 
   const handleSearch = (e?: React.FormEvent) => {
@@ -88,6 +111,13 @@ export default function PublicNavbar({
     const q = query.trim();
     if (onSearch) onSearch(q);
     if (q) router.push(`/explore?search=${encodeURIComponent(q)}`);
+  };
+
+  const handleLogout = async () => {
+    await logoutUser();
+    setUser(null);
+    router.push("/login");
+    router.refresh();
   };
 
   const isActive = (href: string) => pathname === href;
@@ -115,20 +145,6 @@ export default function PublicNavbar({
                 {label}
               </Link>
             ))}
-
-            {/* role-aware extra link */}
-            {user?.role === "ADMIN" && (
-              <Link
-                href="/admin"
-                className={`text-sm font-medium transition-colors ${
-                  isActive("/admin")
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Admin
-              </Link>
-            )}
           </nav>
         </div>
 
@@ -164,44 +180,35 @@ export default function PublicNavbar({
 
         {/* right : auth / profile */}
         <div className="hidden md:flex items-center gap-3">
-          {/* notification */}
-          <button
-            aria-label="Notifications"
-            className="rounded-full p-2 hover:bg-muted/30 focus:outline-none"
-          >
-            <Bell size={18} />
-          </button>
-
-          {/* Verified badge for subscribers (example) */}
-          {user?.role === "TRAVELER" && (
-            <div
-              title="Verified subscriber"
-              className="hidden sm:flex items-center gap-1 rounded-full px-2 py-1 text-xs border"
-            >
-              <ShieldCheck size={14} />
-              <span>Pro</span>
-            </div>
-          )}
-
-          {/* Auth buttons / profile */}
           {loadingUser ? (
             <div className="h-8 w-24 animate-pulse rounded-lg bg-muted/30" />
           ) : user ? (
-            <div className="flex items-center gap-2">
-              <Link href="/dashboard" className="text-sm font-medium">
-                Dashboard
-              </Link>
-
-              <Link
-                href="/profile/${user?.id}"
-                className="rounded-full bg-muted px-3 py-1 text-sm"
+            <>
+              {/* notification */}
+              <button
+                aria-label="Notifications"
+                className="rounded-full p-2 hover:bg-muted/30 focus:outline-none"
               >
-                <div className="flex items-center gap-2">
-                  <User size={16} />
-                  <span className="hidden sm:inline">{user.name}</span>
+                <Bell size={18} />
+              </button>
+
+              {/* Verified badge for subscribers (example) */}
+              {user?.role === "TRAVELER" && (
+                <div
+                  title="Verified subscriber"
+                  className="hidden sm:flex items-center gap-1 rounded-full px-2 py-1 text-xs border"
+                >
+                  <ShieldCheck size={14} />
+                  <span>Pro</span>
                 </div>
-              </Link>
-            </div>
+              )}
+
+              {/* <Link href="/dashboard" className="text-sm font-medium">
+                Dashboard
+              </Link> */}
+
+              <UserDropdown userInfo={user} />
+            </>
           ) : (
             <div className="flex items-center gap-2">
               <Button asChild variant="ghost" size="sm">
@@ -261,24 +268,27 @@ export default function PublicNavbar({
               </Link>
             ))}
 
-            {user?.role === "ADMIN" && (
-              <Link href="/admin" onClick={() => setIsOpen(false)}>
-                Admin Dashboard
-              </Link>
-            )}
-
-            <div className="pt-2">
+            <div className="pt-4 border-t">
               {user ? (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col space-y-2">
                   <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                     Dashboard
                   </Link>
                   <Link
-                    href="/profile/${user?.id}"
+                    href={`/profile/${user.id}`}
                     onClick={() => setIsOpen(false)}
                   >
                     Profile
                   </Link>
+                  <button
+                    onClick={async () => {
+                      await handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="text-left text-sm text-red-600 hover:text-red-800"
+                  >
+                    Logout
+                  </button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
