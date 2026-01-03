@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getMySubscriptionStatus } from "@/services/subscription/subscription";
 import { Badge } from "@/components/ui/badge"; // Assuming you have Badge component
 
