@@ -9,6 +9,7 @@ import { MapPin, Star, Users } from "lucide-react";
 import { getPublicTopTravelers } from "@/services/user/user.service";
 import { Button } from "@/components/ui/button";
 import Loading from "@/app/loading";
+import Link from "next/link";
 
 export const TopTravelersSection = () => {
   const [travelers, setTravelers] = useState<any[]>([]);
@@ -45,8 +46,8 @@ export const TopTravelersSection = () => {
               Connect with experienced community members who love to explore.
             </p>
           </div>
-          <Button variant="link" className="text-brand-orange">
-            View All Travelers
+          <Button asChild variant="link" className="text-brand-orange">
+            <Link href="/travelers">View All Travelers</Link>
           </Button>
         </div>
 
@@ -131,7 +132,7 @@ export const TopTravelersSection = () => {
                   </div>
 
                   <div className="text-xs font-medium text-brand-blue bg-brand-blue/10 py-1 px-3 rounded-full inline-block">
-                    {traveler.trips} Trips Completed
+                    {traveler.completedPlansCount} Trips Completed
                   </div>
                 </motion.div>
               ))}

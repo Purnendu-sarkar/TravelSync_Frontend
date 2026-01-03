@@ -44,6 +44,7 @@ export default function PublicNavbar({
       return [
         { href: "/", label: "Home" },
         { href: "/explore", label: "Explore Travel" },
+        { href: "/travelers", label: "Explore travelers" },
         { href: "/subscription", label: "Subscription" },
         { href: "/contact", label: "Contact" },
       ];
@@ -51,6 +52,7 @@ export default function PublicNavbar({
       return [
         { href: "/", label: "Home" },
         { href: "/explore", label: "Explore Travel" },
+        { href: "/travelers", label: "Explore travelers" },
         { href: "/admin/dashboard", label: "Admin Dashboard" },
         {
           href: "/admin/dashboard/travelers-management",
@@ -67,6 +69,7 @@ export default function PublicNavbar({
       return [
         { href: "/", label: "Home" },
         { href: "/explore", label: "Explore Travel" },
+        { href: "/travelers", label: "Explore travelers" },
         { href: "/subscription", label: "Subscription" },
         { href: "/dashboard", label: "Dashboard" },
         { href: "/contact", label: "Contact" },
