@@ -1,5 +1,9 @@
-export default function page() {
+import { HeroSection } from "@/components/modules/Home/HeroSection";
+
+export default function Home() {
   return (
-    <div>page</div>
-  )
+    <main className="min-h-screen w-full overflow-x-hidden">
+      <HeroSection />
+    </main>
+  );
 }
