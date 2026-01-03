@@ -81,7 +81,7 @@ export const HeroSection = () => {
           </Link>
           <Link href="/create-plan">
             <Button
-              variant="outline"
+              variant="secondary"
               size="lg"
               className="w-full sm:w-auto flex items-center gap-2 text-lg px-8 py-6"
             >
