@@ -114,3 +114,38 @@ export const getPublicSingleTraveler = async (id: string) => {
         };
     }
 };
+
+export const getMyProfile = async () => {
+    try {
+        const res = await serverFetch.get("/user/me", {
+            next: {
+                tags: ["my-profile"],
+                revalidate: 180
+            }
+        });
+        const json = await res.json();
+
+        if (!res.ok || json.success === false) {
+            return {
+                success: false,
+                message: json.message || "Failed to fetch profile",
+                data: null,
+            };
+        }
+
+        return {
+            success: true,
+            data: json.data,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            message:
+                process.env.NODE_ENV === "development"
+                    ? error.message
+                    : "Failed to fetch profile",
+            data: null,
+        };
+    }
+};
+
