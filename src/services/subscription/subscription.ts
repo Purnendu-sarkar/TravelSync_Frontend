@@ -59,7 +59,7 @@ export async function getMySubscriptionStatus() {
     const response = await serverFetch.get("/subscriptions/my-status", {
       next: {
         tags: ["my-subscription-status"],
-        revalidate: 180
+        revalidate: 10
       }
     });
     const result = await response.json();
