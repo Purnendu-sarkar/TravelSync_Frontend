@@ -17,7 +17,7 @@ export const getUserInfo = async (): Promise<UserInfo | any> => {
 
         if (result.success) {
             const accessToken = await getCookie("accessToken");
-            // console.log("ACCESS TOKEN", accessToken)
+            console.log("ACCESS TOKEN", accessToken)
 
             if (!accessToken) {
                 throw new Error("No access token found");
