@@ -11,20 +11,35 @@ const serverFetchHelper = async (endpoint: string, options: RequestInit): Promis
     const accessToken = await getCookie("accessToken");
 
     //to stop recursion loop
-    if (endpoint !== "/auth/refresh-token") {
+    if (endpoint == "/auth/refresh-token") {
         await getNewAccessToken();
     }
+    // console.log("Request Headers:", {
+    //     ...headers,
+    //     Cookie: accessToken ? `accessToken=${accessToken}` : "",
+    // });
+
 
     const response = await fetch(`${BACKEND_API_URL}${endpoint}`, {
+        credentials: "include",
         headers: {
-            Cookie: accessToken ? `accessToken=${accessToken}` : "",
             ...headers,
+            Cookie: accessToken ? `accessToken=${accessToken}` : "",
+
             // ...(accessToken ? { "Authorization": `Bearer ${accessToken}` } : {}),
             // ...(accessToken ? { "Authorization": accessToken } : {}),
 
         },
         ...restOptions,
+
     })
+
+    // console.log("Response status:", response.status);
+
+    // response.headers.forEach((value, key) => {
+    //     console.log(key, value);
+    // });
+
 
     return response;
 }
