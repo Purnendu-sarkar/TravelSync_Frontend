@@ -13,7 +13,7 @@ export async function getAllTravelPlans(queryString?: string) {
     const searchParams = new URLSearchParams(queryString);
     const page = searchParams.get("page") || "1";
     const searchTerm = searchParams.get("searchTerm") || "all";
-    const response = await serverFetch.get(`/travel-plan${queryString ? `?${queryString}` : ""}`, {
+    const response = await serverFetch.get(`/travel-plans${queryString ? `?${queryString}` : ""}`, {
       next: {
         tags: [
           "travel-plans-list",
