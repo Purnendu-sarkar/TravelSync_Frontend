@@ -130,7 +130,7 @@ src/
 
 ```bash
 # Clone repository
-git clone https://github.com/Purnendu-sarkar/TravelSync_Frontend    
+git clone https://github.com/Purnendu-sarkar/TravelSync_Frontend
 cd travel-sync-frontend
 
 # Install dependencies
@@ -146,3 +146,45 @@ NEXT_PUBLIC_BASE_API_URL=http://localhost:5000/api/v1
 # Run development server
 npm run dev
 ```
+
+**Open**: ` http://localhost:5000`
+
+> **Ensure the backend server is running and accessible.**
+
+---
+
+### 🌍 Deployment
+
+Platform: Vercel (optimized for Next.js)
+Environment Variables:`NEXT_PUBLIC_BASE_API_URL` must point to live backend
+
+---
+
+### 🚀 Future Enhancements (Roadmap)
+
+Here are exciting features planned to scale TravelSync into a complete travel social ecosystem:
+
+| Feature                  | Description                                                | Priority |
+| ------------------------ | ---------------------------------------------------------- | -------- |
+| Real-Time Chat           | Private messaging & group chats for accepted buddies       | High     |
+| Push Notifications       | Browser/email alerts for requests, messages, matches       | High     |
+| Google Maps Integration  | Visualize destinations & routes on interactive maps        | High     |
+| Trip Photo Albums        | Share photos after completed trips                         | Medium   |
+| Group Travel Mode        | Support multiple accepted buddies per plan                 | Medium   |
+| Advanced Profile Filters | Filter by age, language, dietary preferences, etc.         | Medium   |
+| Mobile Apps              | React Native iOS & Android apps                            | Medium   |
+| Stories & Feed           | Instagram-style temporary stories and public activity feed | Low      |
+| AI Match Recommendations | Machine learning powered smarter suggestions               | Low      |
+| Multi-Language Support   | i18n for global accessibility                              | Low      |
+| Expense Splitting Tool   | Simple shared expense tracker for groups                   | Low      |
+
+### Contributions and feedback are welcome! 🌟
+
+---
+
+## 👨‍💻 Developed By
+
+**Purnendu Sarkar**  
+Full-Stack Developer | Travel Enthusiast ✈️  
+GitHub: https://github.com/Purnendu-sarkar  
+LinkedIn: https://www.linkedin.com/in/purnendusarkar
