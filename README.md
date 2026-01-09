@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TravelSync – Frontend (Travel Buddy & Meetup Platform)
 
-## Getting Started
+**Frontend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Frontend
+**Live Website:** https://travel-sync-frontend-sandy.vercel.app  
+**Backend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Server
+**Backend API Base URL:** https://travelsync-server.onrender.com/api/v1  
+**Video Demonstration:**
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 🚀 Project Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**TravelSync** is a modern, responsive **travel companion matching platform** built with **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Shadcn/ui**. It allows travelers to create detailed travel plans, discover compatible buddies using advanced filters, send join requests, manage profiles, leave reviews, and unlock premium features through Stripe subscriptions.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This frontend seamlessly integrates with a robust Node.js + Express + Prisma backend to deliver a smooth and engaging user experience.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+### ✨ Core Frontend Features
 
-To learn more about Next.js, take a look at the following resources:
+| Feature                          | Status | Description                                             |
+| -------------------------------- | ------ | ------------------------------------------------------- |
+| Responsive Design                | ✅     | Fully mobile-friendly with Tailwind CSS                 |
+| Role-Based UI (Traveler & Admin) | ✅     | Dynamic navigation & dashboards                         |
+| Authentication Flows             | ✅     | Login, Register, Forgot/Reset Password, Change Password |
+| Advanced Matching & Filters      | ✅     | Destination, dates, budget, travel type, interests      |
+| Travel Plan Management           | ✅     | Create, view, edit, soft-delete plans                   |
+| Buddy Request System             | ✅     | Send & track requests                                   |
+| Profile Pages                    | ✅     | Public & private profiles with stats                    |
+| Review System                    | ✅     | View received reviews                                   |
+| Subscription & Payment           | ✅     | Stripe checkout + success/cancel pages                  |
+| Dashboard Analytics              | ✅     | Traveler & Admin dashboards with charts                 |
+| Toast Notifications              | ✅     | Success/error feedback via Sonner                       |
+| Revalidation & Caching           | ✅     | Next.js revalidateTag for real-time updates             |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🏠 Home Page – 7 Distinct Sections 
 
-## Deploy on Vercel
+1. **Hero Section** – Engaging banner with CTA
+2. **How It Works** – 3-step animated guide
+3. **Popular Destinations** – Dynamic showcase
+4. **Why Choose Us** – Feature highlights
+5. **Top Travelers** – Public showcase of verified users
+6. **Testimonials** – User success stories
+7. **Subscription Preview** – Premium benefits teaser
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+> **Fully satisfies the mandatory requirement of 6+ distinct sections**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+### 🛠 Technology Stack
+
+| Category         | Technologies                           |
+| ---------------- | -------------------------------------- |
+| Framework        | Next.js 14 (App Router)                |
+| Language         | TypeScript                             |
+| Styling          | Tailwind CSS + Shadcn/ui               |
+| State Management | React Server Components + Client Hooks |
+| Forms            | React Hook Form + Zod validation       |
+| Notifications    | Sonner                                 |
+| Icons            | Lucide React                           |
+| Animations       | Framer Motion                          |
+| Deployment       | Vercel                                 |
+| Other            | date-fns, next/cache, revalidateTag    |
+
+---
+
+### 📂 Project Structure
