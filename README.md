@@ -1,8 +1,8 @@
 # TravelSync – Frontend (Travel Buddy & Meetup Platform)
 
-**Frontend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Frontend
+**Frontend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Frontend  
 **Live Website:** https://travel-sync-frontend-sandy.vercel.app  
-**Backend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Server
+**Backend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Server  
 **Backend API Base URL:** https://travelsync-server.onrender.com/api/v1  
 **Video Demonstration:**
 
@@ -35,7 +35,7 @@ This frontend seamlessly integrates with a robust Node.js + Express + Prisma bac
 
 ---
 
-### 🏠 Home Page – 7 Distinct Sections 
+### 🏠 Home Page – 7 Distinct Sections
 
 1. **Hero Section** – Engaging banner with CTA
 2. **How It Works** – 3-step animated guide
@@ -67,3 +67,32 @@ This frontend seamlessly integrates with a robust Node.js + Express + Prisma bac
 ---
 
 ### 📂 Project Structure
+
+```text
+src/
+├── app/
+│   ├── (commonLayout)/         # Public pages (Home, Explore, Contact, etc.)
+│   │   ├── page.tsx            # Home page (7 sections)
+│   │   ├── explore/            # Matching page
+│   │   ├── travelers/          # Public travelers list & details
+│   │   ├── travel-plans/[id]/  # Single plan details
+│   │   ├── my-profile/         # Authenticated profile
+│   │   ├── subscription/       # Plans & checkout
+│   │   ├── payment/            # Success / Cancel
+│   │   └── contact/            # Contact form + map
+│   ├── (auth)/                 # Auth pages (Login, Register, etc.)
+│   ├── (dashboardLayout)/      # Protected dashboards
+│   │   ├── (travelerDashboardLayout)/
+│   │   └── admin/
+│   └── layout.tsx              # Root layout + Toaster
+├── components/
+│   ├── modules/                # Feature-specific components
+│   ├── shared/                 # Reusable UI (buttons, tables, etc.)
+│   └── ui/                     # Shadcn components
+├── services/                   # API calls using server actions
+├── lib/                        # Utilities (formatters, auth, etc.)
+├── hooks/                      # Custom hooks (useDebounce)
+└── types/                      # TypeScript interfaces
+```
+
+---
