@@ -96,3 +96,53 @@ src/
 ```
 
 ---
+
+### 🌐 Key Pages & Routes
+
+| Route                 | Description                          |
+| --------------------- | ------------------------------------ |
+| `/`                   | Home page (7 sections)               |
+| `/login`, `/register` | Authentication                       |
+| `/explore`            | Advanced travel matching             |
+| `/travelers`          | Browse all travelers                 |
+| `/travelers/[id]`     | Public traveler profile              |
+| `/travel-plans/[id]`  | Single travel plan + request to join |
+| `/my-profile`         | Authenticated user profile           |
+| `/subscription`       | Premium plans & Stripe checkout      |
+| `/dashboard`          | Traveler dashboard                   |
+| `/admin/dashboard`    | Admin dashboard & management         |
+| `/contact`            | Contact form with Resend email       |
+
+---
+
+### 🧑‍💻 Admin Credentials (Required for Evaluation)
+
+> **Important: Use these to test admin features**
+
+**Admin Email:** `admin@travelbuddy.com`  
+**Password:** `SuperSecure123`
+
+(The admin is seeded automatically by the backend)
+
+---
+
+### 🚀 Setup & Run Locally
+
+```bash
+# Clone repository
+git clone https://github.com/Purnendu-sarkar/TravelSync_Frontend    
+cd travel-sync-frontend
+
+# Install dependencies
+npm install
+
+# Create .env.local
+cp .env.example .env.local
+
+# Set required environment variables
+NEXT_PUBLIC_BASE_API_URL=http://localhost:5000/api/v1
+# (Backend must be running)
+
+# Run development server
+npm run dev
+```
