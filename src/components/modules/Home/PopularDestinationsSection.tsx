@@ -73,7 +73,7 @@ export const PopularDestinationsSection = () => {
               Be the first to create a travel plan and inspire fellow travelers
               to join your journey.
             </p>
-            <Link href="/create-travel-plan">
+            <Link href="/dashboard/create-travel-plan">
               <Button>Create Travel Plan</Button>
             </Link>
           </motion.div>

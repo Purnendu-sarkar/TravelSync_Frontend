@@ -79,7 +79,7 @@ export const HeroSection = () => {
               <Users className="h-5 w-5" /> Find Buddies
             </Button>
           </Link>
-          <Link href="/create-plan">
+          <Link href="/dashboard/create-travel-plan">
             <Button
               variant="secondary"
               size="lg"
