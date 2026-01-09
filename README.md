@@ -3,7 +3,7 @@
 **Frontend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Frontend  
 **Live Website:** https://travel-sync-frontend-sandy.vercel.app  
 **Backend Repository:** https://github.com/Purnendu-sarkar/TravelSync_Server  
-**Backend API Base URL:** https://travelsync-server.onrender.com/api/v1  
+**Backend API Base URL:** https://travelsync-server.onrender.com  
 **Video Demonstration:** https://drive.google.com/file/d/1eSukxKPAZqCQuMQUTRPsZ_uTkXGCYYOr/view?usp=sharing 
 
 ---
