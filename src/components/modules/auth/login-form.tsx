@@ -12,12 +12,13 @@ import { Input } from "@/components/ui/input";
 import { isValidRedirectForRole } from "@/lib/auth-utils";
 import { loginUser } from "@/services/auth/loginUser";
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 const LoginForm = ({ redirect }: { redirect?: string }) => {
   const [state, formAction, isPending] = useActionState(loginUser, null);
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (state?.success) {
@@ -27,7 +28,10 @@ const LoginForm = ({ redirect }: { redirect?: string }) => {
 
       // need password change?
       if (state.needPasswordChange) {
-        if (state.redirectTo && isValidRedirectForRole(state.redirectTo, state.role)) {
+        if (
+          state.redirectTo &&
+          isValidRedirectForRole(state.redirectTo, state.role)
+        ) {
           router.push(`/reset-password?redirect=${state.redirectTo}`);
         } else {
           router.push("/reset-password");
@@ -36,7 +40,10 @@ const LoginForm = ({ redirect }: { redirect?: string }) => {
       }
 
       // normal redirect
-      if (state.redirectTo && isValidRedirectForRole(state.redirectTo, state.role)) {
+      if (
+        state.redirectTo &&
+        isValidRedirectForRole(state.redirectTo, state.role)
+      ) {
         targetRoute = state.redirectTo;
       }
 
@@ -46,9 +53,30 @@ const LoginForm = ({ redirect }: { redirect?: string }) => {
     }
   }, [state, router]);
 
+  // Auto-fill and submit for demo login
+  const handleDemoLogin = (email: string, password: string) => {
+    if (!formRef.current) return;
+
+    const emailInput = formRef.current.querySelector(
+      'input[name="email"]'
+    ) as HTMLInputElement;
+    const passwordInput = formRef.current.querySelector(
+      'input[name="password"]'
+    ) as HTMLInputElement;
+
+    if (emailInput && passwordInput) {
+      emailInput.value = email;
+      passwordInput.value = password;
+
+      // Trigger form submission
+      formRef.current.requestSubmit();
+    }
+  };
+
   return (
-    <form action={formAction}>
+    <form ref={formRef} action={formAction}>
       {redirect && <input type="hidden" name="redirect" value={redirect} />}
+
       <FieldGroup>
         <div className="grid grid-cols-1 gap-4">
           {/* Email */}
@@ -78,13 +106,47 @@ const LoginForm = ({ redirect }: { redirect?: string }) => {
             <InputFieldError field="password" state={state} />
           </Field>
         </div>
-        <FieldGroup className="mt-4">
+
+        {/* Demo Buttons – Only show in development */}
+        {process.env.NODE_ENV === "development" && (
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                handleDemoLogin(
+                  process.env.NEXT_PUBLIC_DEMO_USER_EMAIL || "",
+                  process.env.NEXT_PUBLIC_DEMO_USER_PASSWORD || ""
+                )
+              }
+              disabled={isPending}
+            >
+              Login as User
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                handleDemoLogin(
+                  process.env.NEXT_PUBLIC_DEMO_ADMIN_EMAIL || "",
+                  process.env.NEXT_PUBLIC_DEMO_ADMIN_PASSWORD || ""
+                )
+              }
+              disabled={isPending}
+            >
+              Login as Admin
+            </Button>
+          </div>
+        )}
+
+        <FieldGroup className="mt-6">
           <Field>
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" disabled={isPending} className="w-full">
               {isPending ? "Logging in..." : "Login"}
             </Button>
 
-            <FieldDescription className="px-6 text-center">
+            <FieldDescription className="px-6 text-center mt-4">
               Don&apos;t have an account?{" "}
               <a href="/register" className="text-blue-600 hover:underline">
                 Sign up
