@@ -108,7 +108,7 @@ const LoginForm = ({ redirect }: { redirect?: string }) => {
         </div>
 
         {/* Demo Buttons – Only show in development */}
-        {process.env.NODE_ENV === "development" && (
+        {process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN === "true" && (
           <div className="mt-6 grid grid-cols-2 gap-4">
             <Button
               type="button"
