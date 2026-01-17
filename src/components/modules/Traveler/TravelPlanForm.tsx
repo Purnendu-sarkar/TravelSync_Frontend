@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ITravelPlan } from "@/types/travelPlan.interface";
+import { useRouter } from "next/navigation";
 
 interface TravelPlanFormProps {
   initialData?: Partial<ITravelPlan>;
@@ -23,23 +24,33 @@ const TravelPlanForm = ({
   isEditMode = false,
   onSuccess,
 }: TravelPlanFormProps) => {
+  const router = useRouter();
+
   const [state, formAction, isPending] = useActionState(
     isEditMode ? updateTravelPlanAction : createTravelPlan,
     null
   );
 
   useEffect(() => {
-    if (state) {
-      if (state.success) {
-        toast.success(
-          state.message || `${isEditMode ? "Updated" : "Created"} successfully!`
-        );
-        if (onSuccess) onSuccess();
-      } else if (state.message) {
-        toast.error(state.message);
+    if (!state) return;
+
+    if (state.success) {
+      toast.success(
+        state.message || `${isEditMode ? "Updated" : "Created"} successfully!`
+      );
+
+      // 👉 Redirect ONLY after create
+      if (!isEditMode) {
+        router.push("/dashboard/my-travel-plans");
+        return;
       }
+
+      // 👉 Optional callback for edit mode
+      onSuccess?.();
+    } else if (state.message) {
+      toast.error(state.message);
     }
-  }, [state, isEditMode, onSuccess]);
+  }, [state, isEditMode, onSuccess, router]);
 
   return (
     <form action={formAction}>
